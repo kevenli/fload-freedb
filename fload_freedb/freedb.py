@@ -203,6 +203,17 @@ class FreedbCollection:
             raise
         return response.json()
 
+    def post(self, doc):
+        client = self._database._client
+        response = client.session.post(client._urljoin(f'/api/databases/{self._database.name}/collections/{self._col_name}/documents'), json=doc)
+        try:
+            response.raise_for_status()
+        except requests.HTTPError as ex:
+            if ex.response.status_code == 404:
+                raise DocumentDotExist()
+            raise
+        return response.json()
+
     def query(self, query=None, skip=0):
         client = self._database._client
         url = client._urljoin(f'/api/databases/{self._database.name}/collections/{self._col_name}/documents')
