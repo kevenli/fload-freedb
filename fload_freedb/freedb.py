@@ -228,15 +228,17 @@ class FreedbCollection:
         return response.json()
 
     def iter(self, query=None, skip=0):
-        return QueryIterator(self, query)
+        return QueryIterator(self, query, skip=skip)
 
 
 class QueryIterator:
-    def __init__(self, collection:Collection, query=None):
+    def __init__(self, collection:Collection, query=None, skip=None):
         self._query=query
         self._doc = []
         self._total = 0
         self._skip = 0
+        if skip:
+            self._skip = skip
         self._limit = 20
         self._collection = collection
         self._iter = None
