@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 import json
+import os
 
 from fload import Source
 from fload_freedb.freedb import FreedbClient, FreedbCollection
@@ -35,7 +36,10 @@ class FreedbSource(Source):
     
     def init(self, ops):
         self.freedb_url = ops.freedb_url
-        self.token = ops.token
+        if ops.token:
+            self.token = ops.token
+        else:
+            self.token = os.environ.get('FREEDB_TOKEN')
         self.db = ops.db
         self.collection = ops.collection
         self.query = ops.query

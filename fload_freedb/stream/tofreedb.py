@@ -1,5 +1,7 @@
 from argparse import ArgumentParser
 import re
+import os
+
 from fload import Pipeline
 from fload_freedb.freedb import FreedbClient, FreedbCollection
 
@@ -20,7 +22,10 @@ class ToFreedb(Pipeline):
 
     def init(self, ops):
         self.freedb_url = ops.freedb_url
-        self.token = ops.token
+        if ops.token:
+            self.token = ops.token
+        else:
+            self.token = os.environ.get('FREEDB_TOKEN')
         self.db = ops.db
         self.collection = ops.collection
 
