@@ -238,6 +238,17 @@ class FreedbCollection:
         response.raise_for_status()
         return response.json()
 
+    def delete_doc(self, doc_id):
+        client = self._database._client
+        response = client.session.delete(client._urljoin(f'/api/databases/{self._database.name}/collections/{self._col_name}/documents/{doc_id}'))
+        try:
+            response.raise_for_status()
+        except requests.HTTPError as ex:
+            if ex.response.status_code == 404:
+                raise DocumentDotExist()
+            raise
+        return response.json()
+
     def iter(self, query=None, skip=0):
         return QueryIterator(self, query, skip=skip)
 

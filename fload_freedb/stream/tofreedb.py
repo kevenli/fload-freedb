@@ -1,40 +1,22 @@
 from argparse import ArgumentParser
+from fload_freedb.stream.base import FreedbDocOperatePipeline
 import re
 import os
 
-from fload import Pipeline
 from fload_freedb.freedb import FreedbClient, FreedbCollection
 
 
-class ToFreedb(Pipeline):
-    freedb_url = None
-    token = None
-    db = None
-    collection = None
-    col:FreedbCollection = None
+class ToFreedb(FreedbDocOperatePipeline):
     exist_policy: str = 'skip'
 
     def add_arguments(self, parser:ArgumentParser):
-        parser.add_argument('--freedb-url', default='http://localhost:8000/')
-        parser.add_argument('--token')
-        parser.add_argument('--db')
-        parser.add_argument('--collection')
+        super().add_arguments(parser)
         parser.add_argument('--exist', choices=['skip', 'overwrite', 'merge'], default='skip')
 
 
     def init(self, ops):
-        self.freedb_url = ops.freedb_url
-        if ops.token:
-            self.token = ops.token
-        else:
-            self.token = os.environ.get('FREEDB_TOKEN')
-        self.db = ops.db
-        self.collection = ops.collection
+        super().init(ops)
         self.exist_policy = ops.exist
-
-        client = FreedbClient(self.freedb_url, token=self.token)
-        db = client.database(self.db)
-        self.col = db.collection(self.collection)
 
     def process(self, item):
         doc_id = item.get('id')

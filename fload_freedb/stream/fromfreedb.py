@@ -1,4 +1,5 @@
 from argparse import ArgumentParser
+from fload_freedb.stream.base import FreedbDocOperateMixin
 import json
 import os
 
@@ -6,12 +7,7 @@ from fload import Source
 from fload_freedb.freedb import FreedbClient, FreedbCollection
 
 
-class FreedbSource(Source):
-    freedb_url = None
-    token = None
-    db = None
-    collection = None
-    col: FreedbCollection = None
+class FreedbSource(FreedbDocOperateMixin, Source):
     query: str = None
     skip: int = None
 
@@ -27,25 +23,12 @@ class FreedbSource(Source):
             yield item
 
     def add_arguments(self, parser:ArgumentParser):
-        parser.add_argument('--freedb-url', default='http://localhost:8000/')
-        parser.add_argument('--token')
-        parser.add_argument('--db')
-        parser.add_argument('--collection')
+        super().add_arguments(parser)
         parser.add_argument('--query')
         parser.add_argument('--skip', type=int)
     
     def init(self, ops):
-        self.freedb_url = ops.freedb_url
-        if ops.token:
-            self.token = ops.token
-        else:
-            self.token = os.environ.get('FREEDB_TOKEN')
-        self.db = ops.db
-        self.collection = ops.collection
+        super().init(ops)
         self.query = ops.query
         self.skip = ops.skip
-
-        client = FreedbClient(self.freedb_url, token=self.token)
-        db = client.database(self.db)
-        self.col = db.collection(self.collection)
     
