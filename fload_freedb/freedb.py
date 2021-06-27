@@ -225,7 +225,7 @@ class FreedbCollection:
             raise
         return response.json()
 
-    def query(self, query=None, skip=0):
+    def query(self, query=None, skip=0, fields=None):
         client = self._database._client
         url = client._urljoin(f'/api/databases/{self._database.name}/collections/{self._col_name}/documents')
         params = {}
@@ -233,6 +233,8 @@ class FreedbCollection:
             params['query'] = json.dumps(query)
         if skip:
             params['skip'] = skip
+        if fields:
+            params['fields'] = fields
         
         response = client.session.get(url, params=params)
         response.raise_for_status()
@@ -249,12 +251,12 @@ class FreedbCollection:
             raise
         return response.json()
 
-    def iter(self, query=None, skip=0):
-        return QueryIterator(self, query, skip=skip)
+    def iter(self, query=None, skip=0, fields=None):
+        return QueryIterator(self, query, skip=skip, fields=fields)
 
 
 class QueryIterator:
-    def __init__(self, collection:Collection, query=None, skip=None):
+    def __init__(self, collection:Collection, query=None, skip=None, fields=None):
         self._query=query
         self._doc = []
         self._total = 0
@@ -264,10 +266,11 @@ class QueryIterator:
         self._limit = 20
         self._collection = collection
         self._iter = None
+        self.fields = fields
         self._do_query()
 
     def _do_query(self):
-        res_data = self._collection.query(self._query, skip=self._skip)
+        res_data = self._collection.query(self._query, skip=self._skip, fields=self.fields)
         self._docs = res_data['data']
         self._iter = iter(self._docs)
         self._total = res_data['paging']['total']
