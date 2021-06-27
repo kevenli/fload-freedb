@@ -192,6 +192,17 @@ class FreedbCollection:
             raise
         return response.json()
 
+    def doc_exists(self, doc_id):
+        client = self._database._client
+        response = client.session.get(client._urljoin(f'/api/databases/{self._database.name}/collections/{self._col_name}/documents/{doc_id}'))
+        try:
+            response.raise_for_status()
+        except requests.HTTPError as ex:
+            if ex.response.status_code == 404:
+                return False
+            raise
+        return True
+
     def put_doc(self, doc_id, doc):
         client = self._database._client
         response = client.session.put(client._urljoin(f'/api/databases/{self._database.name}/collections/{self._col_name}/documents/{doc_id}'), json=doc)

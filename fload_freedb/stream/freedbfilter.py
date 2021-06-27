@@ -11,8 +11,11 @@ class FreedbDocNotExistFilter(FreedbDocOperatePipeline):
         if id is None:
             return item
 
+        exists = False
         try:
-            doc = self.col.doc(id)
-            return None
+            exists = self.col.doc_exists(id)
         except DocumentDotExist:
+            pass
+        
+        if not exists:
             return item
