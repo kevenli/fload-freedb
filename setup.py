@@ -8,7 +8,7 @@ def read_file(filename):
 
 setup(
     name='fload-freedb',
-    version='0.0.1',
+    version='0.0.2',
     description='A fload plugin work together with freedb', 
     packages=find_packages(),
     entry_points={
