@@ -260,7 +260,6 @@ class FreedbCollection:
             if ex.response.status_code == 404:
                 raise DocumentDotExist()
             raise
-        return response.json()
 
     def iter(self, query=None, skip=0, fields=None):
         return QueryIterator(self, query, skip=skip, fields=fields)
