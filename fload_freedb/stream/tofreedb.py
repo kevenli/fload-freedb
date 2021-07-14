@@ -22,7 +22,7 @@ class ToFreedb(FreedbDocOperatePipeline):
         doc_id = item.get('id')
         if self.exist_policy == 'skip' or not doc_id:
             return self.col.post(item)
-        elif self.exist_policy == 'replace':
+        elif self.exist_policy == 'overwrite':
             return self.col.put_doc(doc_id, item)
         elif self.exist_policy == 'merge':
             return self.col.merge_doc(doc_id, item)
